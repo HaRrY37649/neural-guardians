@@ -47,19 +47,18 @@ const Navbar: React.FC = () => {
           <Link to="/dashboard" className="text-sm font-medium hover:text-neural-primary transition-colors">
             Dashboard
           </Link>
-          <Link to="/" className="text-sm font-medium hover:text-neural-primary transition-colors">
-            Features
-          </Link>
-          <Link to="/" className="text-sm font-medium hover:text-neural-primary transition-colors">
+          <Link to="/pricing" className="text-sm font-medium hover:text-neural-primary transition-colors">
             Pricing
           </Link>
         </nav>
 
         <div className="hidden md:flex items-center gap-4">
-          <Button variant="outline" size="sm">
-            Log In
+          <Button variant="outline" size="sm" asChild>
+            <Link to="/login">Log In</Link>
           </Button>
-          <Button size="sm">Get Started</Button>
+          <Button size="sm" asChild>
+            <Link to="/signup">Get Started</Link>
+          </Button>
         </div>
 
         <button
@@ -93,14 +92,7 @@ const Navbar: React.FC = () => {
             Dashboard
           </Link>
           <Link
-            to="/"
-            className="text-lg font-medium hover:text-neural-primary transition-colors"
-            onClick={() => setIsMobileMenuOpen(false)}
-          >
-            Features
-          </Link>
-          <Link
-            to="/"
+            to="/pricing"
             className="text-lg font-medium hover:text-neural-primary transition-colors"
             onClick={() => setIsMobileMenuOpen(false)}
           >
@@ -109,11 +101,11 @@ const Navbar: React.FC = () => {
         </nav>
 
         <div className="mt-10 flex flex-col space-y-4">
-          <Button variant="outline" size="lg" className="w-full">
-            Log In
+          <Button variant="outline" size="lg" className="w-full" asChild onClick={() => setIsMobileMenuOpen(false)}>
+            <Link to="/login">Log In</Link>
           </Button>
-          <Button size="lg" className="w-full">
-            Get Started
+          <Button size="lg" className="w-full" asChild onClick={() => setIsMobileMenuOpen(false)}>
+            <Link to="/signup">Get Started</Link>
           </Button>
         </div>
       </div>
