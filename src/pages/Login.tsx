@@ -1,11 +1,11 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Shield, Lock, User, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import FadeIn from '@/components/animations/FadeIn';
-import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -13,7 +13,14 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
-  const { toast } = useToast();
+  const { login, isAuthenticated } = useAuth();
+
+  useEffect(() => {
+    // Redirect if already authenticated
+    if (isAuthenticated) {
+      navigate('/dashboard');
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,15 +28,9 @@ const Login = () => {
     setError('');
 
     try {
-      // This is a placeholder for actual authentication logic
-      // In a real app, you'd connect to an auth provider or backend
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const success = await login(email, password);
       
-      if (email === 'demo@example.com' && password === 'password') {
-        toast({
-          title: "Login successful",
-          description: "Welcome back to NeuralGuard!",
-        });
+      if (success) {
         navigate('/dashboard');
       } else {
         setError('Invalid email or password. Try demo@example.com / password');

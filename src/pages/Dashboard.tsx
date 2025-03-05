@@ -1,13 +1,17 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '@/components/layout/Navbar';
 import AnalysisForm from '@/components/dashboard/AnalysisForm';
 import SecurityScore from '@/components/dashboard/SecurityScore';
 import VulnerabilityCard, { Vulnerability } from '@/components/dashboard/VulnerabilityCard';
+import UserProfile from '@/components/dashboard/UserProfile';
 import GlassCard from '@/components/shared/GlassCard';
 import FadeIn from '@/components/animations/FadeIn';
 import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Download, Clock, FileText, Shield, RefreshCw, Copy, ExternalLink } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 // Sample data for demonstration
 const sampleVulnerabilities: Vulnerability[] = [
@@ -63,12 +67,23 @@ const Dashboard = () => {
   const [vulnerabilities, setVulnerabilities] = useState<Vulnerability[]>(sampleVulnerabilities);
   const [isAnalyzed, setIsAnalyzed] = useState(false);
   const [contractAddress, setContractAddress] = useState('0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D');
+  const [activeTab, setActiveTab] = useState('analysis');
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+
+  // Redirect if not authenticated
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate('/login');
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleAnalysisSubmit = (data: any) => {
     // Simulate API response
     setContractAddress(data.type === 'address' ? data.address : '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D');
     setScore(Math.floor(Math.random() * 30) + 60); // Random score between 60-90
     setIsAnalyzed(true);
+    setActiveTab('results');
   };
 
   return (
@@ -86,76 +101,84 @@ const Dashboard = () => {
             </FadeIn>
           </div>
           
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-            <div className="lg:col-span-2">
-              <FadeIn>
-                <AnalysisForm onSubmit={handleAnalysisSubmit} />
-              </FadeIn>
-            </div>
+          <Tabs defaultValue="analysis" value={activeTab} onValueChange={setActiveTab} className="mb-8">
+            <TabsList className="grid grid-cols-3 w-full max-w-md mb-6">
+              <TabsTrigger value="analysis">Analysis</TabsTrigger>
+              <TabsTrigger value="results">Results</TabsTrigger>
+              <TabsTrigger value="profile">Profile</TabsTrigger>
+            </TabsList>
             
-            <div>
-              <FadeIn delay={0.1}>
-                <GlassCard className="p-6">
-                  <h2 className="text-lg font-medium mb-4">Recent Analyses</h2>
-                  
-                  <div className="space-y-4">
-                    <div className="p-3 rounded-lg border border-border flex justify-between items-center">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-neural-primary/10 flex items-center justify-center">
-                          <Clock className="w-4 h-4 text-neural-primary" />
+            <TabsContent value="analysis">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="lg:col-span-2">
+                  <FadeIn>
+                    <AnalysisForm onSubmit={handleAnalysisSubmit} />
+                  </FadeIn>
+                </div>
+                
+                <div>
+                  <FadeIn delay={0.1}>
+                    <GlassCard className="p-6">
+                      <h2 className="text-lg font-medium mb-4">Recent Analyses</h2>
+                      
+                      <div className="space-y-4">
+                        <div className="p-3 rounded-lg border border-border flex justify-between items-center">
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-full bg-neural-primary/10 flex items-center justify-center">
+                              <Clock className="w-4 h-4 text-neural-primary" />
+                            </div>
+                            <div>
+                              <p className="text-sm font-medium">0x7a25...2488D</p>
+                              <p className="text-xs text-muted-foreground">3 hours ago</p>
+                            </div>
+                          </div>
+                          <div className="bg-yellow-500/10 text-yellow-500 px-2 py-1 rounded-full text-xs">
+                            73/100
+                          </div>
                         </div>
-                        <div>
-                          <p className="text-sm font-medium">0x7a25...2488D</p>
-                          <p className="text-xs text-muted-foreground">3 hours ago</p>
+                        
+                        <div className="p-3 rounded-lg border border-border flex justify-between items-center">
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-full bg-neural-primary/10 flex items-center justify-center">
+                              <FileText className="w-4 h-4 text-neural-primary" />
+                            </div>
+                            <div>
+                              <p className="text-sm font-medium">TokenSale.sol</p>
+                              <p className="text-xs text-muted-foreground">Yesterday</p>
+                            </div>
+                          </div>
+                          <div className="bg-neural-success/10 text-neural-success px-2 py-1 rounded-full text-xs">
+                            92/100
+                          </div>
+                        </div>
+                        
+                        <div className="p-3 rounded-lg border border-border flex justify-between items-center">
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-full bg-neural-primary/10 flex items-center justify-center">
+                              <Clock className="w-4 h-4 text-neural-primary" />
+                            </div>
+                            <div>
+                              <p className="text-sm font-medium">0x8b3f...9a23B</p>
+                              <p className="text-xs text-muted-foreground">2 days ago</p>
+                            </div>
+                          </div>
+                          <div className="bg-neural-danger/10 text-neural-danger px-2 py-1 rounded-full text-xs">
+                            45/100
+                          </div>
                         </div>
                       </div>
-                      <div className="bg-yellow-500/10 text-yellow-500 px-2 py-1 rounded-full text-xs">
-                        73/100
-                      </div>
-                    </div>
-                    
-                    <div className="p-3 rounded-lg border border-border flex justify-between items-center">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-neural-primary/10 flex items-center justify-center">
-                          <FileText className="w-4 h-4 text-neural-primary" />
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium">TokenSale.sol</p>
-                          <p className="text-xs text-muted-foreground">Yesterday</p>
-                        </div>
-                      </div>
-                      <div className="bg-neural-success/10 text-neural-success px-2 py-1 rounded-full text-xs">
-                        92/100
-                      </div>
-                    </div>
-                    
-                    <div className="p-3 rounded-lg border border-border flex justify-between items-center">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-neural-primary/10 flex items-center justify-center">
-                          <Clock className="w-4 h-4 text-neural-primary" />
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium">0x8b3f...9a23B</p>
-                          <p className="text-xs text-muted-foreground">2 days ago</p>
-                        </div>
-                      </div>
-                      <div className="bg-neural-danger/10 text-neural-danger px-2 py-1 rounded-full text-xs">
-                        45/100
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <Button variant="ghost" className="w-full mt-4 text-sm">
-                    View All History
-                  </Button>
-                </GlassCard>
-              </FadeIn>
-            </div>
-          </div>
-          
-          {isAnalyzed && (
-            <>
-              <div className="mb-8">
+                      
+                      <Button variant="ghost" className="w-full mt-4 text-sm">
+                        View All History
+                      </Button>
+                    </GlassCard>
+                  </FadeIn>
+                </div>
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="results">
+              {isAnalyzed ? (
                 <FadeIn>
                   <GlassCard className="p-6">
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
@@ -244,9 +267,22 @@ const Dashboard = () => {
                     </div>
                   </GlassCard>
                 </FadeIn>
+              ) : (
+                <div className="text-center py-12">
+                  <Shield className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                  <h3 className="text-xl font-medium mb-2">No Analysis Results Yet</h3>
+                  <p className="text-muted-foreground mb-6">Submit a contract for analysis to see results</p>
+                  <Button onClick={() => setActiveTab('analysis')}>Go to Analysis</Button>
+                </div>
+              )}
+            </TabsContent>
+            
+            <TabsContent value="profile">
+              <div className="grid grid-cols-1 gap-6">
+                <UserProfile />
               </div>
-            </>
-          )}
+            </TabsContent>
+          </Tabs>
         </div>
       </main>
     </div>

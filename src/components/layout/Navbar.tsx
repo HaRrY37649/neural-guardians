@@ -3,11 +3,13 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { Shield, Menu, X } from 'lucide-react';
+import { Shield, Menu, X, LogOut, User } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Navbar: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { isAuthenticated, user, logout } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -53,12 +55,29 @@ const Navbar: React.FC = () => {
         </nav>
 
         <div className="hidden md:flex items-center gap-4">
-          <Button variant="outline" size="sm" asChild>
-            <Link to="/login">Log In</Link>
-          </Button>
-          <Button size="sm" asChild>
-            <Link to="/signup">Get Started</Link>
-          </Button>
+          {isAuthenticated ? (
+            <>
+              <div className="flex items-center gap-2 pr-2">
+                <div className="w-8 h-8 rounded-full bg-neural-primary/10 flex items-center justify-center">
+                  <User className="w-4 h-4 text-neural-primary" />
+                </div>
+                <span className="text-sm font-medium">{user?.name}</span>
+              </div>
+              <Button variant="outline" size="sm" onClick={logout} className="gap-1.5">
+                <LogOut className="h-4 w-4" />
+                Logout
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button variant="outline" size="sm" asChild>
+                <Link to="/login">Log In</Link>
+              </Button>
+              <Button size="sm" asChild>
+                <Link to="/signup">Get Started</Link>
+              </Button>
+            </>
+          )}
         </div>
 
         <button
@@ -101,12 +120,32 @@ const Navbar: React.FC = () => {
         </nav>
 
         <div className="mt-10 flex flex-col space-y-4">
-          <Button variant="outline" size="lg" className="w-full" asChild onClick={() => setIsMobileMenuOpen(false)}>
-            <Link to="/login">Log In</Link>
-          </Button>
-          <Button size="lg" className="w-full" asChild onClick={() => setIsMobileMenuOpen(false)}>
-            <Link to="/signup">Get Started</Link>
-          </Button>
+          {isAuthenticated ? (
+            <>
+              <div className="flex items-center gap-3 p-4 border border-border rounded-lg">
+                <div className="w-10 h-10 rounded-full bg-neural-primary/10 flex items-center justify-center">
+                  <User className="w-5 h-5 text-neural-primary" />
+                </div>
+                <div>
+                  <p className="font-medium">{user?.name}</p>
+                  <p className="text-sm text-muted-foreground">{user?.email}</p>
+                </div>
+              </div>
+              <Button variant="outline" size="lg" className="w-full" onClick={() => { logout(); setIsMobileMenuOpen(false); }}>
+                <LogOut className="mr-2 h-4 w-4" />
+                Logout
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button variant="outline" size="lg" className="w-full" asChild onClick={() => setIsMobileMenuOpen(false)}>
+                <Link to="/login">Log In</Link>
+              </Button>
+              <Button size="lg" className="w-full" asChild onClick={() => setIsMobileMenuOpen(false)}>
+                <Link to="/signup">Get Started</Link>
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </header>
