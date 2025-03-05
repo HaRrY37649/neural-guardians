@@ -6,7 +6,7 @@ import FadeIn from '@/components/animations/FadeIn';
 import FeatureCard from '@/components/shared/FeatureCard';
 import GlassCard from '@/components/shared/GlassCard';
 import { Button } from '@/components/ui/button';
-import { Shield, Code, AlertTriangle, Database, Search, ArrowRight, Check, Lock, Eye, TerminalSquare, TrendingUp, Zap } from 'lucide-react';
+import { Shield, Code, AlertTriangle, Database, Search, ArrowRight, Check, Lock, Eye, TerminalSquare, TrendingUp, Zap, ShieldCheck } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const features = [
